@@ -1,0 +1,1710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>480x272 Klipper Touch Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <style>
+    :root {
+      --w: 480px;
+      --h: 272px;
+      --panel: #151515;
+      --text: #f7f7f7;
+      --muted: #a8a8a8;
+      --red: #e53935;
+      --red-2: #ff524d;
+      --green: #26d07c;
+      --yellow: #ffc14d;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      min-height: 100%;
+      background: #000;
+      color: var(--text);
+      font-family: "Montserrat", system-ui, sans-serif;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    body { padding: 24px; }
+
+    button, input { font-family: inherit; }
+
+    button {
+      border: 0;
+      outline: 0;
+      color: var(--text);
+      cursor: pointer;
+      user-select: none;
+      transition: transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 160ms ease, background 180ms ease, color 180ms ease;
+    }
+
+    button:focus, button:focus-visible, input:focus, input:focus-visible { outline: 0; }
+    button:active { transform: scale(0.96); opacity: 0.88; }
+    button:disabled { transform: none; opacity: 1; cursor: not-allowed; }
+
+    .stage {
+      width: min(96vw, calc(96vh * 480 / 272));
+      aspect-ratio: 480 / 272;
+      display: grid;
+      place-items: center;
+      background: #000;
+    }
+
+    .screen {
+      width: var(--w);
+      height: var(--h);
+      transform: scale(var(--scale, 1));
+      transform-origin: center;
+      background: #080808;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .view {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 0;
+      transition: opacity 180ms ease;
+      will-change: opacity;
+    }
+
+    .view .main {
+      opacity: 0;
+      transform: translate3d(8px, 0, 0);
+      transition:
+        opacity 210ms ease,
+        transform 230ms cubic-bezier(0.2, 0.82, 0.18, 1);
+      will-change: opacity, transform;
+    }
+
+    .view.active {
+      opacity: 1;
+      pointer-events: auto;
+      z-index: 2;
+    }
+
+    .view.active .main {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+
+    .view.exiting {
+      opacity: 0;
+      z-index: 1;
+    }
+
+    .view.exiting .main {
+      opacity: 0;
+      transform: translate3d(-6px, 0, 0);
+    }
+
+    .view.active .main > * {
+      animation: none;
+    }
+
+    @keyframes contentIn {
+      from { opacity: 0; transform: translate3d(0, 4px, 0); }
+      to { opacity: 1; transform: translate3d(0, 0, 0); }
+    }
+
+    .sidebar {
+      background: #0b0b0b;
+      padding: 7px 7px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .nav-btn {
+      width: 42px;
+      height: 37px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      background: transparent;
+      color: #b7b7b7;
+      transform: translateX(0) scale(1);
+      transition:
+        transform 240ms cubic-bezier(0.2, 0.82, 0.18, 1),
+        background 220ms ease,
+        color 220ms ease,
+        opacity 180ms ease;
+    }
+
+    .nav-btn.active {
+      background: var(--red);
+      color: #fff;
+      transform: translate3d(3px, 0, 0) scale(1.035);
+    }
+
+    .nav-btn i { transition: transform 240ms cubic-bezier(0.2, 0.82, 0.18, 1); }
+    .nav-btn.active i { transform: scale(1.04); }
+
+    .main {
+      padding: 9px 10px;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .topbar {
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .title { font-size: 15px; font-weight: 700; letter-spacing: -0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .top-logo { width: 120px; height: 22px; object-fit: contain; object-position: left center; display: block; flex-shrink: 0; }
+
+    .status {
+      height: 22px;
+      min-width: 58px;
+      padding: 0 9px;
+      border-radius: 999px;
+      background: rgba(38, 208, 124, 0.16);
+      color: var(--green);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.045em;
+      flex-shrink: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      transition:
+        min-width 260ms cubic-bezier(0.2, 0.82, 0.18, 1),
+        padding 260ms cubic-bezier(0.2, 0.82, 0.18, 1),
+        background 220ms ease,
+        color 220ms ease,
+        opacity 180ms ease;
+    }
+
+    .status.printing-wide { min-width: 86px; }
+    .status.status-home { min-width: 62px; }
+    .status.paused { min-width: 58px; background: rgba(255, 193, 77, 0.16); color: var(--yellow); }
+    .status.idle-status { min-width: 42px; background: rgba(255, 255, 255, 0.11); color: #d5d5d5; }
+
+    .telemetry {
+      display: flex;
+      gap: 7px;
+      font-size: 10px;
+      color: var(--muted);
+      align-items: center;
+      flex-shrink: 0;
+      min-width: 0;
+    }
+
+    .temp-chip, .time-chip {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+      font-weight: 600;
+    }
+
+    .time-chip { color: #ddd; }
+    .temp-chip b { color: var(--text); font-size: 11px; }
+    .temp-chip .ti-flame { color: var(--red-2); }
+
+    .content-area { height: 214px; overflow: hidden; }
+
+    .home-layout {
+      display: grid;
+      grid-template-columns: 1.36fr 0.9fr;
+      gap: 10px;
+      height: 214px;
+      overflow: hidden;
+    }
+
+    .home-idle { display: none; height: 214px; overflow: hidden; }
+    .screen.idle .home-printing { display: none; }
+    .screen.idle .home-idle { display: grid; }
+
+    .idle-card {
+      position: relative;
+      border-radius: 20px;
+      display: grid;
+      grid-template-rows: 1fr 38px;
+      gap: 12px;
+      padding: 18px;
+      overflow: hidden;
+      background: #090909;
+    }
+
+    .idle-card::after {
+      content: "";
+      position: absolute;
+      inset: -36%;
+      background:
+        radial-gradient(circle at 22% 30%, rgba(255, 82, 77, 0.48), transparent 20%),
+        radial-gradient(circle at 62% 28%, rgba(229, 57, 53, 0.28), transparent 24%),
+        radial-gradient(circle at 72% 76%, rgba(255, 45, 45, 0.34), transparent 22%),
+        radial-gradient(circle at 28% 78%, rgba(120, 18, 18, 0.44), transparent 26%),
+        linear-gradient(135deg, #180f0f, #070707 62%);
+      filter: blur(14px);
+      animation: idleLava 18s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+
+    @keyframes idleLava {
+      0% { transform: translate3d(-2%, -1%, 0) scale(1) rotate(0deg); }
+      50% { transform: translate3d(2%, 1.5%, 0) scale(1.04) rotate(8deg); }
+      100% { transform: translate3d(-1%, 2%, 0) scale(1.02) rotate(-6deg); }
+    }
+
+    .idle-copy {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      min-width: 0;
+    }
+
+    .idle-copy b { font-size: 46px; line-height: 1; letter-spacing: -0.055em; }
+
+    .idle-actions {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: flex-end;
+      align-items: end;
+      gap: 8px;
+    }
+
+    .idle-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.13);
+      display: inline-grid;
+      place-items: center;
+      font-size: 19px;
+      backdrop-filter: blur(8px);
+    }
+
+    .idle-btn.power { background: rgba(229, 57, 53, 0.82); }
+
+    .print-card, .progress-card, .settings-card, .mesh-panel {
+      background: var(--panel);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    .print-card {
+      padding: 10px;
+      display: grid;
+      grid-template-rows: 30px minmax(0, 1fr) 42px;
+      gap: 8px;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .label {
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .file-head { min-width: 0; overflow: hidden; }
+
+    .file-name {
+      margin-top: 0;
+      font-size: 15px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      position: relative;
+      max-width: 100%;
+      height: 25px;
+      line-height: 25px;
+      letter-spacing: -0.01em;
+    }
+
+    .file-name > span {
+      display: inline-flex;
+      min-width: max-content;
+      will-change: transform;
+    }
+
+    .file-name .loop-copy, .file-item .loop-copy { padding-left: 36px; }
+    .file-name.marquee > span { animation: marqueeLoop var(--marquee-speed, 16s) linear infinite; }
+
+    @keyframes marqueeLoop {
+      from { transform: translateX(0); }
+      to { transform: translateX(calc(-1 * var(--loop-width, 120px))); }
+    }
+
+    .model-box {
+      border-radius: 15px;
+      background: #0f0f0f;
+      display: grid;
+      place-items: center;
+      min-height: 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .model-box::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 72% 24%, rgba(229, 57, 53, 0.16), transparent 38%);
+      pointer-events: none;
+    }
+
+    .cube {
+      width: 54px;
+      height: 54px;
+      position: relative;
+      transform: rotateX(58deg) rotateZ(45deg);
+      transform-style: preserve-3d;
+      opacity: 0.96;
+      z-index: 1;
+    }
+
+    .cube span { position: absolute; inset: 0; background: rgba(255, 255, 255, 0.08); }
+    .cube .top { transform: translateZ(27px); background: rgba(255, 255, 255, 0.16); }
+    .cube .front { transform: rotateX(90deg) translateZ(-27px); background: rgba(255, 255, 255, 0.08); }
+    .cube .side { transform: rotateY(90deg) translateZ(27px); background: rgba(229, 57, 53, 0.52); }
+
+    .actions, .preview-actions, .heater-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .control-btn, .soft-btn {
+      height: 42px;
+      border-radius: 14px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      font-size: 12px;
+      overflow: hidden;
+      white-space: nowrap;
+      min-width: 0;
+      padding: 0 10px;
+      background: #242424;
+    }
+
+    .control-btn.primary, .soft-btn.red { background: var(--red); }
+    .control-btn.danger { background: #242424; color: #e6e6e6; }
+
+    .progress-card {
+      padding: 10px;
+      display: grid;
+      grid-template-rows: 27px minmax(0, 1fr) 22px;
+      min-height: 0;
+      gap: 6px;
+    }
+
+    .mini-title {
+      font-size: 14px;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ring-wrap { position: relative; display: grid; place-items: center; min-height: 0; }
+    .ring { width: 108px; height: 108px; transform: rotate(-90deg); }
+    .ring circle { fill: none; stroke-width: 12; stroke-linecap: round; }
+    .ring .track { stroke: #272727; }
+    .ring .bar { stroke: var(--red); stroke-dasharray: 327; stroke-dashoffset: 147; transition: stroke-dashoffset 220ms ease; }
+    .percent { position: absolute; font-size: 24px; font-weight: 800; }
+    .time-left { text-align: center; color: var(--muted); font-size: 11px; white-space: nowrap; }
+    .time-left b { color: #fff; }
+
+    .prints-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.08fr;
+      gap: 10px;
+      height: 214px;
+      overflow: hidden;
+    }
+
+    .file-list {
+      background: var(--panel);
+      border-radius: 18px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+
+    .file-list::-webkit-scrollbar { display: none; }
+
+    .file-item {
+      border-radius: 13px;
+      background: #202020;
+      min-height: 45px;
+      padding: 7px 9px;
+      display: grid;
+      grid-template-rows: 17px 13px;
+      gap: 2px;
+      text-align: left;
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+
+    .file-item.selected { background: var(--red); }
+
+    .file-item > span {
+      font-size: 10px;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+      max-width: 100%;
+      line-height: 17px;
+    }
+
+    .file-item.selected > span {
+      display: inline-flex;
+      text-overflow: clip;
+      animation: selectedFileMarquee var(--file-marquee-speed, 16s) linear infinite;
+      min-width: max-content;
+      max-width: none;
+    }
+
+    .file-item small {
+      color: rgba(255, 255, 255, 0.62);
+      font-size: 9px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    @keyframes selectedFileMarquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(calc(-1 * var(--loop-width, 120px))); }
+    }
+
+    .gcode-preview-card {
+      background: var(--panel);
+      border-radius: 18px;
+      padding: 9px;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) 42px;
+      gap: 8px;
+      overflow: hidden;
+    }
+
+    .gcode-preview {
+      background: #101010;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .gcode-preview::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 60% 30%, rgba(229, 57, 53, 0.13), transparent 44%);
+      pointer-events: none;
+    }
+
+    .cube-placeholder {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 58px;
+    }
+
+    .start-print:disabled { background: #343434; color: #8a8a8a; }
+
+    .mesh-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.05fr;
+      gap: 10px;
+      height: 214px;
+      overflow: hidden;
+    }
+
+    .mesh-panel { padding: 12px; }
+
+    .bed-visual {
+      height: 142px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(229, 57, 53, 0.15), #111 46%, rgba(255, 255, 255, 0.06));
+      display: grid;
+      place-items: center;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+
+    .bed-grid { display: grid; grid-template-columns: repeat(5, 16px); gap: 9px; }
+    .bed-grid i { width: 16px; height: 16px; border-radius: 50%; background: #555; display: block; }
+    .bed-grid i.hot { background: var(--red); }
+    .bed-grid i.mid { background: var(--yellow); }
+    .mesh-value { margin-top: 3px; font-size: 18px; font-weight: 800; height: 25px; line-height: 25px; }
+    .big-temp { font-size: 40px; font-weight: 800; margin-top: 12px; }
+    .heater-buttons { margin-top: 14px; }
+
+    .tuning-layout, .fan-subpage, .control-layout {
+      display: none;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      height: 214px;
+      overflow: hidden;
+    }
+
+    .control-layout { display: grid; }
+
+    .control-panel {
+      grid-template-rows: 40px 40px 44px 36px;
+      gap: 8px;
+    }
+
+    .control-label {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      height: 12px;
+      line-height: 12px;
+    }
+
+    .extrusion-block {
+      display: grid;
+      grid-template-rows: 12px 30px;
+      gap: 2px;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .temp-set-row {
+      display: grid;
+      grid-template-columns: 1fr 44px 58px;
+      gap: 7px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .temp-set-row span {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .temp-set-row output {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .temp-step,
+    .temp-off,
+    .temp-field {
+      height: 34px;
+      border-radius: 12px;
+      background: #242424;
+      font: 800 12px Montserrat, system-ui, sans-serif;
+    }
+
+    .temp-off { color: #cfcfcf; }
+    .temp-field { background: var(--red); color: #fff; text-align: center; }
+    .temp-step.red { background: var(--red); }
+
+    .extrude-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 38px minmax(0, 1fr);
+      gap: 6px;
+      align-items: center;
+    }
+
+    .extrude-row .control-btn {
+      height: 30px;
+      padding: 0;
+      gap: 0;
+      font-size: 10px;
+      min-width: 0;
+    }
+
+    .extrude-row .control-btn i { font-size: 19px; flex: 0 0 auto; }
+    .extrude-row output { align-self: center; }
+
+    .extrude-row output {
+      text-align: center;
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--muted);
+    }
+
+    .control-bottom {
+      display: grid;
+      grid-template-columns: 1fr 44px;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .step-bar.compact { height: 36px; }
+
+    .motor-off-btn {
+      height: 36px;
+      border-radius: 12px;
+      background: #242424;
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+    }
+
+    .tune-extra-panel { grid-template-rows: repeat(3, 43px); gap: 10px; }
+    .compact-submenu { height: 40px; }
+
+    .tuning-layout.active, .fan-subpage.active { display: grid; animation: contentIn 220ms cubic-bezier(0.2, 0.82, 0.18, 1) both; }
+
+    .settings-card {
+      padding: 9px;
+      display: grid;
+      gap: 7px;
+      min-height: 0;
+      overflow: hidden;
+      align-content: stretch;
+    }
+
+    .tune-panel { grid-template-rows: repeat(3, 43px) 40px; gap: 6px; }
+
+    .setting-row, .fan-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      grid-template-rows: 13px 30px;
+      column-gap: 8px;
+      row-gap: 0;
+      align-items: center;
+      min-width: 0;
+      overflow: visible;
+    }
+
+    .setting-row { height: 43px; }
+    .fan-row { min-height: 47px; }
+
+    .setting-row span, .fan-row span {
+      grid-column: 1;
+      grid-row: 1;
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 800;
+      white-space: nowrap;
+      line-height: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .fan-row span { font-size: 9px; }
+
+    .setting-row output, .fan-row output {
+      grid-column: 2;
+      grid-row: 1;
+      font-size: 10px;
+      font-weight: 800;
+      text-align: right;
+      line-height: 13px;
+    }
+
+    .setting-row input, .fan-row input {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      align-self: center;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 30px;
+      appearance: none;
+      -webkit-appearance: none;
+      background: transparent;
+      cursor: pointer;
+      touch-action: pan-y;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 16px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--red) var(--fill, 50%), #292929 var(--fill, 50%));
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 28px;
+      height: 28px;
+      margin-top: -6px;
+      border-radius: 50%;
+      background: #fff;
+      border: 6px solid var(--red);
+    }
+
+    input[type="range"]::-moz-range-track { height: 16px; border-radius: 999px; background: #292929; }
+    input[type="range"]::-moz-range-progress { height: 16px; border-radius: 999px; background: var(--red); }
+    input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 6px solid var(--red); }
+
+    .submenu-row {
+      height: 40px;
+      align-self: end;
+      border-radius: 14px;
+      background: #202020;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 8px;
+      padding: 0 12px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .submenu-row span { display: inline-flex; align-items: center; gap: 6px; }
+    .submenu-row b { color: var(--muted); font-size: 10px; }
+    .submenu-row i { color: var(--red-2); font-size: 18px; }
+
+    .jog-panel { grid-template-rows: 30px 1fr; gap: 8px; }
+    .step-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+
+    .step-btn {
+      border-radius: 10px;
+      background: #242424;
+      color: var(--muted);
+      font: 800 10px Montserrat, system-ui, sans-serif;
+    }
+
+    .step-btn.active { background: var(--red); color: #fff; }
+
+    .jog-pad {
+      display: grid;
+      grid-template-columns: repeat(3, 48px);
+      grid-template-rows: repeat(3, 38px);
+      gap: 6px;
+      justify-content: center;
+      align-content: center;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .icon-btn { border-radius: 14px; font-size: 20px; display: grid; place-items: center; background: #242424; }
+    .icon-btn.home-axis { background: var(--red); }
+    .fan-list-card { grid-template-rows: 28px 1fr; }
+    .subhead { display: flex; align-items: center; gap: 8px; }
+
+    .back-btn, .back-settings {
+      width: 31px;
+      height: 31px;
+      border-radius: 12px;
+      background: var(--red);
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .fan-list {
+      display: grid;
+      grid-template-rows: repeat(3, 47px);
+      gap: 7px;
+      align-content: start;
+      min-height: 0;
+      overflow: visible;
+    }
+
+    .printer-fan-card { padding: 9px; }
+
+    .printer-diagram {
+      height: 100%;
+      border-radius: 15px;
+      background: radial-gradient(circle at 50% 30%, rgba(229, 57, 53, 0.12), transparent 42%), #101010;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    .printer-svg { width: 100%; height: 100%; }
+
+    .printer-frame, .printer-bed, .printer-gantry, .printer-tool, .printer-spool, .printer-filter, .printer-part {
+      fill: none;
+      stroke: #ededed;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.9;
+    }
+
+    .printer-frame { stroke-width: 5; }
+    .printer-bed { stroke-width: 6; opacity: 0.72; }
+    .printer-gantry { stroke-width: 4; opacity: 0.72; }
+    .printer-tool { stroke-width: 5; }
+    .printer-spool, .printer-filter { stroke-width: 4; opacity: 0.68; }
+    .printer-part { stroke-width: 4; opacity: 0.75; }
+    .fan-icon circle { fill: #151515; stroke: var(--red-2); stroke-width: 3; }
+    .fan-icon path { fill: var(--red-2); stroke: none; opacity: 0.96; transform-box: fill-box; transform-origin: center; }
+    .fan-icon.spinning path { animation: fanSpin var(--fan-speed, 0.9s) linear infinite; }
+    .fan-icon.stopped { opacity: 0.32; }
+    @keyframes fanSpin { to { transform: rotate(360deg); } }
+
+    .settings-main { position: relative; }
+    .settings-page { display: none; height: 214px; overflow: hidden; }
+    .settings-page.active { display: grid; animation: contentIn 220ms cubic-bezier(0.2, 0.82, 0.18, 1) both; }
+    .settings-home { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+
+    .settings-tile {
+      border-radius: 17px;
+      background: var(--panel);
+      padding: 12px;
+      display: grid;
+      grid-template-rows: 1fr auto;
+      align-items: center;
+      justify-items: start;
+      text-align: left;
+      overflow: hidden;
+    }
+
+    .settings-tile i { font-size: 26px; color: var(--red-2); }
+    .settings-tile span { font-size: 13px; font-weight: 800; }
+    .settings-tile.danger { background: rgba(229, 57, 53, 0.82); }
+    .settings-tile.danger i { color: #fff; }
+
+    .sub-settings { grid-template-rows: 31px 1fr; gap: 8px; }
+    .sub-settings-head { display: flex; align-items: center; gap: 9px; min-width: 0; }
+    .sub-settings-head b { font-size: 16px; }
+    .settings-form { display: grid; gap: 8px; min-height: 0; overflow: hidden; }
+    .settings-form.two-col { grid-template-columns: 1fr 0.78fr; grid-auto-rows: 51px; align-content: start; }
+
+    .field-card {
+      border-radius: 15px;
+      background: var(--panel);
+      padding: 9px;
+      display: grid;
+      grid-template-rows: 14px 1fr;
+      gap: 5px;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .field-card span {
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .text-field {
+      border-radius: 11px;
+      background: #242424;
+      font: 800 12px Montserrat, system-ui, sans-serif;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: left;
+      padding: 0 10px;
+    }
+
+    .connect-card {
+      grid-column: 1 / -1;
+      height: 43px;
+      border-radius: 15px;
+      background: #202020;
+      display: grid;
+      grid-template-columns: 30px 1fr auto;
+      gap: 8px;
+      align-items: center;
+      padding: 0 12px;
+      align-self: start;
+      overflow: hidden;
+    }
+
+    .connect-card i { color: var(--green); font-size: 22px; }
+    .connect-card span { font-size: 12px; font-weight: 800; }
+    .connect-card b { color: var(--muted); font-size: 10px; }
+
+    .wide-row {
+      min-height: 44px;
+      border-radius: 15px;
+      background: var(--panel);
+      display: grid;
+      grid-template-columns: 104px 1fr auto auto;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 10px;
+      overflow: hidden;
+    }
+
+    .wide-row span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .wide-row input { min-width: 0; }
+    .wide-row output { font-size: 11px; font-weight: 800; }
+
+    .seg {
+      height: 30px;
+      border-radius: 11px;
+      background: #242424;
+      color: #bbb;
+      font: 800 10px Montserrat, system-ui, sans-serif;
+      padding: 0 9px;
+    }
+
+    .seg.active { background: var(--red); color: #fff; }
+
+    .console-box {
+      background: #101010;
+      border-radius: 15px;
+      padding: 12px;
+      color: #d8d8d8;
+      font-size: 12px;
+      line-height: 1.45;
+      overflow: hidden;
+    }
+
+    .command-field { height: 42px; display: inline-flex; align-items: center; gap: 8px; }
+    .power-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+    .power-action {
+      border-radius: 17px;
+      background: var(--panel);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font: 800 12px Montserrat, system-ui, sans-serif;
+    }
+
+    .power-action i { font-size: 28px; color: var(--red-2); }
+    .power-action.danger { background: rgba(229, 57, 53, 0.86); }
+    .power-action.danger i { color: #fff; }
+
+    .keyboard-modal {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      background: rgba(0, 0, 0, 0.58);
+      display: grid;
+      place-items: stretch;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms ease;
+    }
+
+    .keyboard-modal.active { opacity: 1; pointer-events: auto; }
+
+    .keyboard-window {
+      width: 100%;
+      height: 100%;
+      background: #090909;
+      padding: 10px;
+      display: grid;
+      grid-template-rows: 42px 1fr;
+      gap: 9px;
+      transform: scale(0.985);
+      transition: transform 180ms ease;
+    }
+
+    .keyboard-modal.active .keyboard-window { transform: scale(1); }
+    .keyboard-top { display: grid; grid-template-columns: 40px 1fr 40px; gap: 8px; align-items: center; }
+
+    .keyboard-top button {
+      height: 40px;
+      border-radius: 14px;
+      background: #242424;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+    }
+
+    #keyboardApply { background: var(--red); }
+
+    .keyboard-preview {
+      height: 40px;
+      border-radius: 14px;
+      background: #171717;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      font-size: 15px;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .keyboard-keys { display: grid; gap: 6px; align-content: stretch; }
+    .key-row { display: grid; gap: 6px; grid-auto-flow: column; grid-auto-columns: 1fr; }
+
+    .key {
+      border-radius: 10px;
+      background: #202020;
+      font: 800 14px Montserrat, system-ui, sans-serif;
+    }
+
+    .key.space { grid-column: span 5; }
+    .key.red { background: var(--red); }
+
+    .numpad-window { grid-template-rows: 42px 1fr; }
+    .numpad-keys {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      align-content: stretch;
+    }
+    .numkey {
+      border: 0;
+      border-radius: 14px;
+      background: #202020;
+      color: #fff;
+      font: 900 20px Montserrat, system-ui, sans-serif;
+    }
+    .numkey.red { background: var(--red); }
+    .numkey.muted { background: #2a2a2a; color: #cfcfcf; }
+  </style>
+</head>
+<body>
+  <div class="stage" id="stage">
+    <main class="screen" id="screen" aria-label="Klipper 480 by 272 touchscreen prototype">
+      <section class="view active" data-view="home">
+        <nav class="sidebar">
+          <button class="nav-btn active" data-go="home"><i class="ti ti-home"></i></button>
+          <button class="nav-btn" data-go="prints"><i class="ti ti-folders"></i></button>
+          <button class="nav-btn" data-go="control"><i class="ti ti-hand-stop"></i></button>
+          <button class="nav-btn" data-go="mesh"><i class="ti ti-border-corners"></i></button>
+          <button class="nav-btn" data-go="tuning"><i class="ti ti-adjustments-alt"></i></button>
+          <button class="nav-btn" data-go="settings"><i class="ti ti-settings"></i></button>
+        </nav>
+        <div class="main">
+          <header class="topbar">
+            <div class="title-wrap"><div class="title"><img class="top-logo" alt="Zero G" src="https://raw.githubusercontent.com/ZeroGDesign/docs/gh-pages/docs/assets/images/logo-zerog.svg"></div><div class="status print-status">Printing</div></div>
+            <div class="telemetry"><span class="time-chip">11:52</span><span class="temp-chip"><i class="ti ti-flame"></i> <b class="noz-temp">200°</b>/210°</span><span class="temp-chip"><i class="ti ti-solar-panel"></i> <b class="bed-temp">60°</b>/60°</span></div>
+          </header>
+          <div class="home-idle">
+            <article class="idle-card">
+              <div class="idle-copy"><b>Ready</b></div>
+              <div class="idle-actions">
+                <button class="idle-btn" data-go="prints" aria-label="Files"><i class="ti ti-folders"></i></button>
+                <button class="idle-btn" data-go="control" aria-label="Control"><i class="ti ti-hand-stop"></i></button>
+                <button class="idle-btn" data-go="tuning" aria-label="Tuning"><i class="ti ti-adjustments-alt"></i></button>
+                <button class="idle-btn power" data-go="settings" aria-label="Power"><i class="ti ti-power"></i></button>
+              </div>
+            </article>
+          </div>
+          <div class="home-layout home-printing">
+            <article class="print-card">
+              <div class="file-head"><div class="file-name"><span>Voron_Cube_0.2mm.gcode</span></div></div>
+              <div class="model-box" aria-label="3D model preview"><div class="cube"><span class="top"></span><span class="front"></span><span class="side"></span></div></div>
+              <div class="actions"><button class="control-btn primary" id="pauseBtn"><i class="ti ti-player-pause"></i>Pause</button><button class="control-btn danger" id="cancelBtn"><i class="ti ti-x"></i>Cancel</button></div>
+            </article>
+            <article class="progress-card">
+              <div class="progress-head"><div class="mini-title">Layer 10 / 100</div></div>
+              <div class="ring-wrap"><svg class="ring" viewBox="0 0 120 120"><circle class="track" cx="60" cy="60" r="52"></circle><circle class="bar" id="ringBar" cx="60" cy="60" r="52"></circle></svg><div class="percent" id="percent">55%</div></div>
+              <div class="time-left"><b>~5m</b> remaining</div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" data-view="prints">
+        <nav class="sidebar">
+          <button class="nav-btn" data-go="home"><i class="ti ti-home"></i></button>
+          <button class="nav-btn active" data-go="prints"><i class="ti ti-folders"></i></button>
+          <button class="nav-btn" data-go="control"><i class="ti ti-hand-stop"></i></button>
+          <button class="nav-btn" data-go="mesh"><i class="ti ti-border-corners"></i></button>
+          <button class="nav-btn" data-go="tuning"><i class="ti ti-adjustments-alt"></i></button>
+          <button class="nav-btn" data-go="settings"><i class="ti ti-settings"></i></button>
+        </nav>
+        <div class="main">
+          <header class="topbar"><div class="title-wrap"><div class="title">Files</div><div class="status print-status">Printing</div></div><div class="telemetry"><span class="time-chip">11:52</span><span class="temp-chip"><i class="ti ti-flame"></i> <b class="noz-temp">200°</b>/210°</span><span class="temp-chip"><i class="ti ti-solar-panel"></i> <b class="bed-temp">60°</b>/60°</span></div></header>
+          <div class="prints-layout">
+            <section class="file-list" aria-label="Print files">
+              <button class="file-item selected"><span>Voron_Cube_0.2mm.gcode</span><small>18m • PLA</small></button>
+              <button class="file-item"><span>Speed_Benchy_long_filename_pressure_advance_test.gcode</span><small>42m • PLA</small></button>
+              <button class="file-item"><span>KlipperScreen_Case_Front_Panel.gcode</span><small>2h 14m • PETG</small></button>
+              <button class="file-item"><span>SHT36_Toolhead_Duct_v7_CF.gcode</span><small>1h 03m • ASA</small></button>
+              <button class="file-item"><span>Bed_Level_Test_370x370.gcode</span><small>12m • PLA</small></button>
+              <button class="file-item"><span>Cable_Clip_Tiny_4x.gcode</span><small>9m • TPU</small></button>
+            </section>
+            <section class="gcode-preview-card">
+              <div class="gcode-preview" aria-label="Selected G-code preview"><div class="cube-placeholder" id="previewSvg"><i class="ti ti-cube"></i></div></div>
+              <div class="preview-actions"><button class="control-btn primary start-print" id="startPrintBtn" disabled><i class="ti ti-player-play"></i>Print</button><button class="control-btn danger" id="deleteFileBtn"><i class="ti ti-trash"></i>Delete</button></div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" data-view="mesh">
+        <nav class="sidebar">
+          <button class="nav-btn" data-go="home"><i class="ti ti-home"></i></button>
+          <button class="nav-btn" data-go="prints"><i class="ti ti-folders"></i></button>
+          <button class="nav-btn" data-go="control"><i class="ti ti-hand-stop"></i></button>
+          <button class="nav-btn active" data-go="mesh"><i class="ti ti-border-corners"></i></button>
+          <button class="nav-btn" data-go="tuning"><i class="ti ti-adjustments-alt"></i></button>
+          <button class="nav-btn" data-go="settings"><i class="ti ti-settings"></i></button>
+        </nav>
+        <div class="main">
+          <header class="topbar"><div class="title-wrap"><div class="title">Bed Mesh</div><div class="status print-status">Printing</div></div><div class="telemetry"><span class="time-chip">11:52</span><span class="temp-chip"><i class="ti ti-flame"></i> <b class="noz-temp">200°</b>/210°</span><span class="temp-chip"><i class="ti ti-solar-panel"></i> <b class="bed-temp">60°</b>/60°</span></div></header>
+          <div class="mesh-layout">
+            <article class="mesh-panel"><div class="label">Deviation</div><div class="mesh-value">0.18 mm</div><div class="bed-visual"><div class="bed-grid" id="bedGrid"></div></div></article>
+            <article class="mesh-panel"><div class="label">Bed temperature</div><div class="big-temp">60°C</div><div class="label">Profile: textured_pc</div><div class="heater-buttons"><button class="soft-btn red"><i class="ti ti-ruler-measure"></i>Calibrate</button><button class="soft-btn"><i class="ti ti-upload"></i>Load</button></div></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" data-view="control">
+        <nav class="sidebar">
+          <button class="nav-btn" data-go="home"><i class="ti ti-home"></i></button>
+          <button class="nav-btn" data-go="prints"><i class="ti ti-folders"></i></button>
+          <button class="nav-btn active" data-go="control"><i class="ti ti-hand-stop"></i></button>
+          <button class="nav-btn" data-go="mesh"><i class="ti ti-border-corners"></i></button>
+          <button class="nav-btn" data-go="tuning"><i class="ti ti-adjustments-alt"></i></button>
+          <button class="nav-btn" data-go="settings"><i class="ti ti-settings"></i></button>
+        </nav>
+        <div class="main">
+          <header class="topbar"><div class="title-wrap"><div class="title">Control</div><div class="status print-status">Printing</div></div><div class="telemetry"><span class="time-chip">11:52</span><span class="temp-chip"><i class="ti ti-flame"></i> <b class="noz-temp">200°</b>/210°</span><span class="temp-chip"><i class="ti ti-solar-panel"></i> <b class="bed-temp">60°</b>/60°</span></div></header>
+          <div class="control-layout">
+            <article class="settings-card control-panel">
+              <div class="temp-set-row"><span><i class="ti ti-flame"></i>Nozzle</span><button class="temp-off">Off</button><button class="temp-field" data-numpad-field="Nozzle Temperature">210°</button></div>
+              <div class="temp-set-row"><span><i class="ti ti-solar-panel"></i>Bed</span><button class="temp-off">Off</button><button class="temp-field" data-numpad-field="Bed Temperature">60°</button></div>
+              <div class="extrusion-block"><div class="control-label">Extrusion</div><div class="extrude-row"><button class="control-btn danger" aria-label="Retract"><i class="ti ti-arrow-back-up"></i></button><output>5 mm</output><button class="control-btn primary" aria-label="Extrude"><i class="ti ti-arrow-forward-up"></i></button></div></div>
+              <div class="control-bottom"><div class="step-bar compact" role="group" aria-label="Extrusion increment"><button class="step-btn active">1</button><button class="step-btn">5</button><button class="step-btn">10</button><button class="step-btn">25</button></div><button class="motor-off-btn" aria-label="Motors off"><i class="ti ti-engine-off"></i></button></div>
+            </article>
+            <article class="settings-card jog-panel">
+              <div class="step-bar" role="group" aria-label="Jog increment"><button class="step-btn active" data-step="0.1">0.1</button><button class="step-btn" data-step="1">1</button><button class="step-btn" data-step="10">10</button><button class="step-btn" data-step="100">100</button></div>
+              <div class="jog-pad"><div></div><button class="icon-btn"><i class="ti ti-chevron-up"></i></button><div></div><button class="icon-btn"><i class="ti ti-chevron-left"></i></button><button class="icon-btn home-axis"><i class="ti ti-home"></i></button><button class="icon-btn"><i class="ti ti-chevron-right"></i></button><button class="icon-btn">Z-</button><button class="icon-btn"><i class="ti ti-chevron-down"></i></button><button class="icon-btn">Z+</button></div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" data-view="tuning">
+        <nav class="sidebar">
+          <button class="nav-btn" data-go="home"><i class="ti ti-home"></i></button>
+          <button class="nav-btn" data-go="prints"><i class="ti ti-folders"></i></button>
+          <button class="nav-btn" data-go="control"><i class="ti ti-hand-stop"></i></button>
+          <button class="nav-btn" data-go="mesh"><i class="ti ti-border-corners"></i></button>
+          <button class="nav-btn active" data-go="tuning"><i class="ti ti-adjustments-alt"></i></button>
+          <button class="nav-btn" data-go="settings"><i class="ti ti-settings"></i></button>
+        </nav>
+        <div class="main">
+          <header class="topbar"><div class="title-wrap"><div class="title">Tuning</div><div class="status print-status">Printing</div></div><div class="telemetry"><span class="time-chip">11:52</span><span class="temp-chip"><i class="ti ti-flame"></i> <b class="noz-temp">200°</b>/210°</span><span class="temp-chip"><i class="ti ti-solar-panel"></i> <b class="bed-temp">60°</b>/60°</span></div></header>
+          <div class="tuning-layout active" id="tuningMain">
+            <article class="settings-card tune-panel">
+              <div class="setting-row"><span><i class="ti ti-gauge"></i>Speed</span><input data-unit="%" type="range" min="30" max="180" value="100"><output>100%</output></div>
+              <div class="setting-row"><span><i class="ti ti-droplet"></i>Flow</span><input data-unit="%" type="range" min="80" max="120" value="98"><output>98%</output></div>
+              <div class="setting-row"><span><i class="ti ti-arrows-vertical"></i>Z Offset</span><input data-unit="mm" type="range" min="-40" max="40" value="0"><output>0.00</output></div>
+              <button class="submenu-row compact-submenu" id="openFans"><span><i class="ti ti-propeller"></i>Fans</span><b>3 active</b><i class="ti ti-chevron-right"></i></button>
+            </article>
+            <article class="settings-card tune-extra-panel">
+              <div class="setting-row"><span><i class="ti ti-wave-sine"></i>Pressure Adv.</span><input data-format="pa" type="range" min="0" max="120" value="45"><output>0.045</output></div>
+              <div class="setting-row"><span><i class="ti ti-clock-bolt"></i>Acceleration</span><input data-unit="" type="range" min="500" max="12000" value="5000"><output>5000</output></div>
+              <div class="setting-row"><span><i class="ti ti-corner-down-right"></i>Corner Vel.</span><input data-unit="" type="range" min="1" max="20" value="5"><output>5</output></div>
+            </article>
+          </div>
+          <div class="fan-subpage" id="fanSubpage">
+            <article class="settings-card fan-list-card">
+              <div class="subhead"><button class="back-btn" id="backTuning"><i class="ti ti-chevron-left"></i></button><div class="mini-title">Fans</div></div>
+              <div class="fan-list">
+                <div class="fan-row"><span>Hotend</span><input data-fan-slider="hotend" data-unit="%" type="range" min="0" max="100" value="70"><output>70%</output></div>
+                <div class="fan-row"><span>Part Cooling</span><input data-fan-slider="part" data-unit="%" type="range" min="0" max="100" value="45"><output>45%</output></div>
+                <div class="fan-row"><span>Chamber Filter</span><input data-fan-slider="filter" data-unit="%" type="range" min="0" max="100" value="0"><output>0%</output></div>
+              </div>
+            </article>
+            <article class="settings-card printer-fan-card">
+              <div class="printer-diagram" aria-label="Printer fan diagram">
+                <svg viewBox="0 0 170 150" class="printer-svg">
+                  <path class="printer-frame" d="M31 128H139M40 128V30H130V128M40 30H130" />
+                  <path class="printer-gantry" d="M52 54H118M85 54V78" />
+                  <path class="printer-bed" d="M55 113H115" />
+                  <path class="printer-part" d="M73 113V92H98V113" />
+                  <path class="printer-tool" d="M73 78H97L91 98H79Z" />
+                  <path class="printer-spool" d="M30 42C18 42 18 24 30 24C42 24 42 42 30 42ZM30 42V57" />
+                  <path class="printer-filter" d="M116 36H136V56H116Z M121 42H131M121 50H131" />
+                  <g class="fan-icon" data-spin="hotend" transform="translate(85 88)"><circle r="13" /><path d="M0 -4C9 -13 15 -6 5 0C15 6 9 13 0 4C-9 13 -15 6 -5 0C-15 -6 -9 -13 0 -4Z" /></g>
+                  <g class="fan-icon" data-spin="part" transform="translate(111 94)"><circle r="11" /><path d="M0 -3C8 -11 13 -5 4 0C13 5 8 11 0 3C-8 11 -13 5 -4 0C-13 -5 -8 -11 0 -3Z" /></g>
+                  <g class="fan-icon" data-spin="filter" transform="translate(126 46)"><circle r="11" /><path d="M0 -3C8 -11 13 -5 4 0C13 5 8 11 0 3C-8 11 -13 5 -4 0C-13 -5 -8 -11 0 -3Z" /></g>
+                </svg>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" data-view="settings">
+        <nav class="sidebar">
+          <button class="nav-btn" data-go="home"><i class="ti ti-home"></i></button>
+          <button class="nav-btn" data-go="prints"><i class="ti ti-folders"></i></button>
+          <button class="nav-btn" data-go="control"><i class="ti ti-hand-stop"></i></button>
+          <button class="nav-btn" data-go="mesh"><i class="ti ti-border-corners"></i></button>
+          <button class="nav-btn" data-go="tuning"><i class="ti ti-adjustments-alt"></i></button>
+          <button class="nav-btn active" data-go="settings"><i class="ti ti-settings"></i></button>
+        </nav>
+        <div class="main settings-main">
+          <header class="topbar"><div class="title-wrap"><div class="title">Settings</div><div class="status print-status">Printing</div></div><div class="telemetry"><span class="time-chip">11:52</span><span class="temp-chip"><i class="ti ti-flame"></i> <b class="noz-temp">200°</b>/210°</span><span class="temp-chip"><i class="ti ti-solar-panel"></i> <b class="bed-temp">60°</b>/60°</span></div></header>
+          <div class="settings-home settings-page active" id="settingsHome">
+            <button class="settings-tile" data-settings-page="network"><i class="ti ti-wifi"></i><span>Network</span></button>
+            <button class="settings-tile" data-settings-page="screen"><i class="ti ti-device-desktop"></i><span>Screen</span></button>
+            <button class="settings-tile" data-settings-page="klipper"><i class="ti ti-brand-superhuman"></i><span>Klipper</span></button>
+            <button class="settings-tile" data-settings-page="audio"><i class="ti ti-volume"></i><span>Audio</span></button>
+            <button class="settings-tile" data-settings-page="console"><i class="ti ti-terminal-2"></i><span>Console</span></button>
+            <button class="settings-tile danger" data-settings-page="power"><i class="ti ti-power"></i><span>Power</span></button>
+          </div>
+          <div class="settings-page sub-settings" id="settings-network">
+            <div class="sub-settings-head"><button class="back-settings"><i class="ti ti-chevron-left"></i></button><b>Network</b></div>
+            <div class="settings-form two-col"><label class="field-card"><span>Wi‑Fi SSID</span><button class="text-field" data-field="Wi‑Fi SSID">TarmacNet</button></label><label class="field-card"><span>Password</span><button class="text-field" data-field="Wi‑Fi Password" data-secret="true">••••••••</button></label><label class="field-card"><span>Hostname</span><button class="text-field" data-field="Hostname">mercury-one</button></label></div>
+          </div>
+          <div class="settings-page sub-settings" id="settings-screen">
+            <div class="sub-settings-head"><button class="back-settings"><i class="ti ti-chevron-left"></i></button><b>Screen</b></div>
+            <div class="settings-form"><div class="wide-row"><span><i class="ti ti-brightness"></i>Brightness</span><input data-unit="%" type="range" min="10" max="100" value="82"><output>82%</output></div><div class="wide-row"><span><i class="ti ti-clock-pause"></i>Sleep</span><button class="seg active">5m</button><button class="seg">15m</button><button class="seg">Never</button></div><div class="wide-row"><span><i class="ti ti-moon"></i>Theme</span><button class="seg active">Dark</button><button class="seg">Dim</button><button class="seg">Red</button></div></div>
+          </div>
+          <div class="settings-page sub-settings" id="settings-klipper">
+            <div class="sub-settings-head"><button class="back-settings"><i class="ti ti-chevron-left"></i></button><b>Klipper</b></div>
+            <div class="settings-form two-col"><label class="field-card"><span>Moonraker IP</span><button class="text-field" data-field="Moonraker IP">192.168.1.42</button></label><label class="field-card"><span>Port</span><button class="text-field" data-field="Moonraker Port">7125</button></label><label class="field-card"><span>API Key</span><button class="text-field" data-field="API Key" data-secret="true">Optional</button></label><button class="connect-card"><i class="ti ti-plug-connected"></i><span>Test Connection</span><b>Ready</b></button></div>
+          </div>
+          <div class="settings-page sub-settings" id="settings-audio">
+            <div class="sub-settings-head"><button class="back-settings"><i class="ti ti-chevron-left"></i></button><b>Audio</b></div>
+            <div class="settings-form"><div class="wide-row"><span><i class="ti ti-volume"></i>Volume</span><input data-unit="%" type="range" min="0" max="100" value="55"><output>55%</output></div><div class="wide-row"><span><i class="ti ti-bell"></i>Touch Beeps</span><button class="seg active">On</button><button class="seg">Off</button></div><div class="wide-row"><span><i class="ti ti-alert-triangle"></i>Alerts</span><button class="seg active">Chime</button><button class="seg">Tone</button><button class="seg">Silent</button></div></div>
+          </div>
+          <div class="settings-page sub-settings" id="settings-console">
+            <div class="sub-settings-head"><button class="back-settings"><i class="ti ti-chevron-left"></i></button><b>Console</b></div>
+            <div class="console-box"><code>status: connected<br>mcu: ready<br>moonraker: reachable</code></div><button class="command-field text-field" data-field="Console Command"><i class="ti ti-terminal-2"></i> Enter command</button>
+          </div>
+          <div class="settings-page sub-settings" id="settings-power">
+            <div class="sub-settings-head"><button class="back-settings"><i class="ti ti-chevron-left"></i></button><b>Power</b></div>
+            <div class="power-grid"><button class="power-action"><i class="ti ti-refresh"></i><span>Restart Klipper</span></button><button class="power-action"><i class="ti ti-refresh-dot"></i><span>Restart MCU</span></button><button class="power-action"><i class="ti ti-router"></i><span>Restart Host</span></button><button class="power-action danger"><i class="ti ti-power"></i><span>Shutdown</span></button></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="keyboard-modal" id="keyboardModal" aria-hidden="true">
+        <div class="keyboard-window">
+          <div class="keyboard-top"><button id="keyboardCancel"><i class="ti ti-x"></i></button><div class="keyboard-preview" id="keyboardPreview"></div><button id="keyboardApply"><i class="ti ti-check"></i></button></div>
+          <div class="keyboard-keys" id="keyboardKeys"></div>
+        </div>
+      </div>
+
+      <div class="keyboard-modal numpad-modal" id="numpadModal" aria-hidden="true">
+        <div class="keyboard-window numpad-window">
+          <div class="keyboard-top"><button id="numpadCancel"><i class="ti ti-x"></i></button><div class="keyboard-preview" id="numpadPreview"></div><button id="numpadApply"><i class="ti ti-check"></i></button></div>
+          <div class="numpad-keys" id="numpadKeys"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const screen = document.getElementById('screen');
+    const stage = document.getElementById('stage');
+
+    let progress = 55;
+    let printerState = 'printing';
+    let paused = false;
+
+    function fitScreen() {
+      const scale = Math.min(stage.clientWidth / 480, stage.clientHeight / 272);
+      screen.style.setProperty('--scale', scale);
+    }
+
+    window.addEventListener('resize', () => {
+      fitScreen();
+      updateMarquees();
+      updateSelectedFileMarquee();
+    });
+    fitScreen();
+
+    function activeViewName(el) {
+      return el.closest('.view')?.dataset.view || document.querySelector('.view.active')?.dataset.view || 'home';
+    }
+
+    function setStatusPills() {
+      const isPrinting = printerState === 'printing';
+      screen.classList.toggle('idle', !isPrinting);
+
+      document.querySelectorAll('.print-status').forEach(el => {
+        const view = activeViewName(el);
+        const showPercent = isPrinting && !paused && view !== 'home';
+        el.classList.toggle('idle-status', !isPrinting);
+        el.classList.toggle('paused', paused && isPrinting);
+        el.classList.toggle('printing-wide', showPercent);
+        el.classList.toggle('status-home', isPrinting && !paused && view === 'home');
+
+        if (!isPrinting) el.textContent = 'Idle';
+        else if (paused) el.textContent = 'Paused';
+        else el.textContent = view === 'home' ? 'Printing' : `Printing ${progress}%`;
+      });
+
+      const startBtn = document.getElementById('startPrintBtn');
+      if (startBtn) startBtn.disabled = isPrinting;
+    }
+
+    function switchView(target) {
+      const current = document.querySelector('.view.active');
+      document.querySelectorAll('.view').forEach(view => {
+        const active = view.dataset.view === target;
+        view.classList.toggle('active', active);
+        view.classList.toggle('exiting', view === current && !active);
+        view.querySelectorAll('.nav-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.go === target));
+      });
+      clearTimeout(window.viewExitTimer);
+      window.viewExitTimer = setTimeout(() => {
+        document.querySelectorAll('.view.exiting').forEach(view => view.classList.remove('exiting'));
+      }, 280);
+      if (target === 'settings') showSettingsHome();
+      setStatusPills();
+      updateMarquees();
+      updateSelectedFileMarquee();
+    }
+
+    document.addEventListener('click', event => {
+      const nav = event.target.closest('[data-go]');
+      if (nav) {
+        switchView(nav.dataset.go);
+        return;
+      }
+    });
+
+    function syncSlider(slider) {
+      const out = slider.parentElement.querySelector('output');
+      const min = Number(slider.min || 0);
+      const max = Number(slider.max || 100);
+      const value = Number(slider.value || 0);
+      const fill = max === min ? 0 : ((value - min) / (max - min)) * 100;
+      slider.style.setProperty('--fill', fill + '%');
+
+      if (out) {
+        if (slider.dataset.format === 'pa') out.textContent = (value / 1000).toFixed(3);
+        else if (slider.dataset.unit === 'mm') out.textContent = (value / 100).toFixed(2);
+        else out.textContent = `${slider.value}${slider.dataset.unit || ''}`;
+      }
+
+      if (slider.dataset.fanSlider) updateFanIcon(slider.dataset.fanSlider, slider.value);
+    }
+
+    function updateFanIcon(name, value) {
+      const icon = document.querySelector(`[data-spin="${name}"]`);
+      if (!icon) return;
+      const speed = Number(value);
+      icon.classList.toggle('spinning', speed > 0);
+      icon.classList.toggle('stopped', speed === 0);
+      icon.style.setProperty('--fan-speed', Math.max(0.32, 1.8 - speed / 68) + 's');
+    }
+
+    document.querySelectorAll('input[type="range"]').forEach(slider => {
+      slider.addEventListener('input', () => syncSlider(slider));
+      syncSlider(slider);
+    });
+
+    document.querySelectorAll('.step-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const group = btn.closest('.step-bar');
+        group?.querySelectorAll('.step-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    document.getElementById('openFans')?.addEventListener('click', () => {
+      document.getElementById('tuningMain')?.classList.remove('active');
+      document.getElementById('fanSubpage')?.classList.add('active');
+    });
+
+    document.getElementById('backTuning')?.addEventListener('click', () => {
+      document.getElementById('fanSubpage')?.classList.remove('active');
+      document.getElementById('tuningMain')?.classList.add('active');
+    });
+
+    function ensureLoopText(span) {
+      if (!span) return;
+      const raw = (span.dataset.loopText || span.textContent).trim();
+      if (span.dataset.loopReady === '1' && span.dataset.loopText === raw) return;
+      span.dataset.loopText = raw;
+      span.innerHTML = `<span class="loop-original">${raw}</span><span class="loop-copy" aria-hidden="true">${raw}</span>`;
+      span.dataset.loopReady = '1';
+    }
+
+    function updateMarquees() {
+      document.querySelectorAll('.file-name').forEach(el => {
+        const span = el.querySelector(':scope > span');
+        if (!span) return;
+        ensureLoopText(span);
+        const original = span.querySelector('.loop-original');
+        const width = original ? Math.ceil(original.getBoundingClientRect().width + 36) : span.scrollWidth;
+        const shouldScroll = width > el.clientWidth + 8;
+        span.style.setProperty('--loop-width', width + 'px');
+        span.style.setProperty('--marquee-speed', Math.max(18, width / 10) + 's');
+        el.classList.toggle('marquee', shouldScroll);
+      });
+    }
+
+    function updateSelectedFileMarquee() {
+      document.querySelectorAll('.file-item').forEach(item => {
+        const span = item.querySelector(':scope > span');
+        if (!span) return;
+        ensureLoopText(span);
+        const original = span.querySelector('.loop-original');
+        const width = original ? Math.ceil(original.getBoundingClientRect().width + 36) : span.scrollWidth;
+        const selected = item.classList.contains('selected');
+        const shouldScroll = selected && width > item.clientWidth + 8;
+        span.style.setProperty('--loop-width', width + 'px');
+        span.style.setProperty('--file-marquee-speed', Math.max(18, width / 10) + 's');
+        span.style.animationPlayState = shouldScroll ? 'running' : 'paused';
+      });
+    }
+
+    setTimeout(() => {
+      updateMarquees();
+      updateSelectedFileMarquee();
+    }, 100);
+
+    document.querySelectorAll('.file-item').forEach(item => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.file-item').forEach(el => el.classList.remove('selected'));
+        item.classList.add('selected');
+        const preview = document.getElementById('previewSvg');
+        if (preview) preview.innerHTML = '<i class="ti ti-cube"></i>';
+        updateSelectedFileMarquee();
+      });
+    });
+
+    const bedGrid = document.getElementById('bedGrid');
+    if (bedGrid && !bedGrid.children.length) {
+      for (let i = 0; i < 25; i++) {
+        const dot = document.createElement('i');
+        if ([4, 8, 12, 18, 22].includes(i)) dot.className = 'hot';
+        else if ([3, 7, 13, 16, 21].includes(i)) dot.className = 'mid';
+        bedGrid.appendChild(dot);
+      }
+    }
+
+    function tickClock() {
+      const now = new Date();
+      const text = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      document.querySelectorAll('.time-chip').forEach(el => el.textContent = text);
+    }
+    tickClock();
+    setInterval(tickClock, 15000);
+
+    setInterval(() => {
+      if (printerState !== 'printing' || paused) return;
+      progress = progress >= 59 ? 55 : progress + 1;
+      const percent = document.getElementById('percent');
+      if (percent) percent.textContent = progress + '%';
+      const ring = document.getElementById('ringBar');
+      if (ring) ring.style.strokeDashoffset = 327 - (327 * progress / 100);
+      const nozzle = (199 + Math.round(Math.random() * 2)) + '°';
+      document.querySelectorAll('.temp-chip:first-of-type b, .noz-temp').forEach(el => el.textContent = nozzle);
+      setStatusPills();
+    }, 1800);
+
+    document.getElementById('pauseBtn')?.addEventListener('click', () => {
+      paused = !paused;
+      document.getElementById('pauseBtn').innerHTML = paused ? '<i class="ti ti-player-play"></i>Resume' : '<i class="ti ti-player-pause"></i>Pause';
+      setStatusPills();
+    });
+
+    document.getElementById('cancelBtn')?.addEventListener('click', () => {
+      printerState = 'idle';
+      paused = false;
+      setStatusPills();
+    });
+
+    document.getElementById('startPrintBtn')?.addEventListener('click', () => {
+      printerState = 'printing';
+      paused = false;
+      setStatusPills();
+    });
+
+    function showSettingsHome() {
+      document.querySelectorAll('.settings-page').forEach(page => page.classList.remove('active'));
+      document.getElementById('settingsHome')?.classList.add('active');
+    }
+
+    document.querySelectorAll('[data-settings-page]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.settings-page').forEach(page => page.classList.remove('active'));
+        document.getElementById('settings-' + btn.dataset.settingsPage)?.classList.add('active');
+      });
+    });
+
+    document.querySelectorAll('.back-settings').forEach(btn => {
+      btn.addEventListener('click', showSettingsHome);
+    });
+
+    document.querySelectorAll('.seg').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const row = btn.closest('.wide-row');
+        row?.querySelectorAll('.seg').forEach(s => s.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    const keyboardModal = document.getElementById('keyboardModal');
+    const keyboardPreview = document.getElementById('keyboardPreview');
+    const keyboardKeys = document.getElementById('keyboardKeys');
+    let activeTextField = null;
+    let typedText = '';
+
+    function drawKeyboard() {
+      if (!keyboardKeys) return;
+      keyboardKeys.innerHTML = '';
+      ['1234567890', 'qwertyuiop', 'asdfghjkl.', 'zxcvbnm:-_'].forEach(rowText => {
+        const row = document.createElement('div');
+        row.className = 'key-row';
+        [...rowText].forEach(ch => {
+          const key = document.createElement('button');
+          key.className = 'key';
+          key.textContent = ch;
+          key.addEventListener('click', () => {
+            typedText += ch;
+            keyboardPreview.textContent = typedText;
+          });
+          row.appendChild(key);
+        });
+        keyboardKeys.appendChild(row);
+      });
+
+      const tools = document.createElement('div');
+      tools.className = 'key-row';
+      [['SPACE', 'space', ' '], ['⌫', 'red', 'back'], ['/', '', '/']].forEach(([label, cls, val]) => {
+        const key = document.createElement('button');
+        key.className = 'key ' + cls;
+        key.textContent = label;
+        key.addEventListener('click', () => {
+          if (val === 'back') typedText = typedText.slice(0, -1);
+          else typedText += val;
+          keyboardPreview.textContent = typedText;
+        });
+        tools.appendChild(key);
+      });
+      keyboardKeys.appendChild(tools);
+    }
+    drawKeyboard();
+
+    document.querySelectorAll('.text-field').forEach(field => {
+      field.addEventListener('click', () => {
+        activeTextField = field;
+        typedText = field.dataset.secret === 'true' && field.textContent.includes('•') ? '' : field.textContent.trim();
+        keyboardPreview.textContent = typedText;
+        keyboardModal?.classList.add('active');
+        keyboardModal?.setAttribute('aria-hidden', 'false');
+      });
+    });
+
+    document.getElementById('keyboardCancel')?.addEventListener('click', () => {
+      keyboardModal?.classList.remove('active');
+      keyboardModal?.setAttribute('aria-hidden', 'true');
+    });
+
+    document.getElementById('keyboardApply')?.addEventListener('click', () => {
+      if (activeTextField) activeTextField.textContent = activeTextField.dataset.secret === 'true' && typedText ? '••••••••' : (typedText || 'Optional');
+      keyboardModal?.classList.remove('active');
+      keyboardModal?.setAttribute('aria-hidden', 'true');
+    });
+
+    const numpadModal = document.getElementById('numpadModal');
+    const numpadPreview = document.getElementById('numpadPreview');
+    const numpadKeys = document.getElementById('numpadKeys');
+    let activeTempField = null;
+    let tempText = '';
+
+    function drawNumpad() {
+      if (!numpadKeys) return;
+      numpadKeys.innerHTML = '';
+      ['1','2','3','4','5','6','7','8','9','CLR','0','⌫'].forEach(label => {
+        const key = document.createElement('button');
+        key.className = 'numkey' + (label === 'CLR' ? ' muted' : label === '⌫' ? ' red' : '');
+        key.textContent = label;
+        key.addEventListener('click', () => {
+          if (label === 'CLR') tempText = '';
+          else if (label === '⌫') tempText = tempText.slice(0, -1);
+          else if (tempText.length < 3) tempText += label;
+          numpadPreview.textContent = tempText ? tempText + '°' : 'Off';
+        });
+        numpadKeys.appendChild(key);
+      });
+    }
+    drawNumpad();
+
+    document.querySelectorAll('.temp-field').forEach(field => {
+      field.addEventListener('click', () => {
+        activeTempField = field;
+        tempText = field.textContent.replace(/[^0-9]/g, '');
+        numpadPreview.textContent = tempText ? tempText + '°' : 'Off';
+        numpadModal?.classList.add('active');
+        numpadModal?.setAttribute('aria-hidden', 'false');
+      });
+    });
+
+    document.querySelectorAll('.temp-off').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const field = btn.parentElement.querySelector('.temp-field');
+        if (field) field.textContent = 'Off';
+      });
+    });
+
+    document.getElementById('numpadCancel')?.addEventListener('click', () => {
+      numpadModal?.classList.remove('active');
+      numpadModal?.setAttribute('aria-hidden', 'true');
+    });
+
+    document.getElementById('numpadApply')?.addEventListener('click', () => {
+      if (activeTempField) activeTempField.textContent = tempText ? tempText + '°' : 'Off';
+      numpadModal?.classList.remove('active');
+      numpadModal?.setAttribute('aria-hidden', 'true');
+    });
+
+    setStatusPills();
+  </script>
+</body>
+</html>
