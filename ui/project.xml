@@ -1,0 +1,7 @@
+<project name="zero_g_ui">
+    <targets>
+        <target name="default">
+            <display width="480" height="272"/>
+        </target>
+    </targets>
+</project>
