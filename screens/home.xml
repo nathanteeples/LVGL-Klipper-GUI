@@ -1,0 +1,86 @@
+<screen>
+    <view>
+        <style name="screen_bg"/>
+
+        <lv_obj x="0" y="0" width="56" height="272">
+            <style name="sidebar_bg"/>
+
+            <lv_button x="10" y="7" width="42" height="37">
+                <style name="nav_active"/>
+                <lv_label x="14" y="9" text="H" style_text_color="0xffffff"/>
+            </lv_button>
+
+            <lv_button x="7" y="49" width="42" height="37">
+                <style name="nav_idle"/>
+                <lv_label x="14" y="9" text="F" style_text_color="0xb7b7b7"/>
+            </lv_button>
+
+            <lv_button x="7" y="91" width="42" height="37">
+                <style name="nav_idle"/>
+                <lv_label x="14" y="9" text="C" style_text_color="0xb7b7b7"/>
+            </lv_button>
+
+            <lv_button x="7" y="133" width="42" height="37">
+                <style name="nav_idle"/>
+                <lv_label x="14" y="9" text="M" style_text_color="0xb7b7b7"/>
+            </lv_button>
+
+            <lv_button x="7" y="175" width="42" height="37">
+                <style name="nav_idle"/>
+                <lv_label x="14" y="9" text="T" style_text_color="0xb7b7b7"/>
+            </lv_button>
+
+            <lv_button x="7" y="217" width="42" height="37">
+                <style name="nav_idle"/>
+                <lv_label x="14" y="9" text="S" style_text_color="0xb7b7b7"/>
+            </lv_button>
+        </lv_obj>
+
+        <lv_obj x="66" y="9" width="404" height="32" style_bg_color="0x080808" style_border_width="0">
+            <lv_label x="0" y="4" text="Zero G" style_text_color="0xf7f7f7"/>
+
+            <lv_obj x="74" y="5" width="62" height="22">
+                <style name="pill_printing"/>
+                <lv_label x="9" y="4" text="Printing" style_text_color="0x26d07c"/>
+            </lv_obj>
+
+            <lv_label x="266" y="8" text="11:52" style_text_color="0xdddddd"/>
+            <lv_label x="309" y="8" text="N 200/210" style_text_color="0xf7f7f7"/>
+            <lv_label x="369" y="8" text="B 60/60" style_text_color="0xf7f7f7"/>
+        </lv_obj>
+
+        <lv_obj x="66" y="49" width="237" height="214">
+            <style name="card"/>
+
+            <lv_label x="10" y="10" width="210" text="Voron_Cube_0.2mm.gcode" style_text_color="0xf7f7f7"/>
+
+            <lv_obj x="10" y="48" width="217" height="106">
+                <style name="card_dark"/>
+                <lv_label x="80" y="42" text="[cube]" style_text_color="0xf7f7f7"/>
+            </lv_obj>
+
+            <lv_button x="10" y="162" width="104" height="42">
+                <style name="button_red"/>
+                <lv_label x="28" y="12" text="Pause" style_text_color="0xffffff"/>
+            </lv_button>
+
+            <lv_button x="122" y="162" width="105" height="42">
+                <style name="button_dark"/>
+                <lv_label x="28" y="12" text="Cancel" style_text_color="0xf7f7f7"/>
+            </lv_button>
+        </lv_obj>
+
+        <lv_obj x="313" y="49" width="157" height="214">
+            <style name="card"/>
+
+            <lv_label x="10" y="10" text="Layer 10 / 100" style_text_color="0xf7f7f7"/>
+
+            <lv_obj x="24" y="44" width="108" height="108">
+                <style name="ring"/>
+                <lv_label x="34" y="40" text="55%" style_text_color="0xf7f7f7"/>
+            </lv_obj>
+
+            <lv_label x="35" y="181" text="~5m remaining" style_text_color="0xa8a8a8"/>
+        </lv_obj>
+    </view>
+</screen>

@@ -1,0 +1,57 @@
+<screen>
+    <view>
+        <style name="screen_bg"/>
+
+        <lv_obj x="0" y="0" width="56" height="272">
+            <style name="sidebar_bg"/>
+
+            <lv_button x="10" y="7" width="42" height="37">
+                <style name="nav_active"/>
+                <lv_label x="14" y="9" text="H" style_text_color="0xffffff"/>
+            </lv_button>
+            <lv_button x="7" y="49" width="42" height="37"><style name="nav_idle"/><lv_label x="14" y="9" text="F" style_text_color="0xb7b7b7"/></lv_button>
+            <lv_button x="7" y="91" width="42" height="37"><style name="nav_idle"/><lv_label x="14" y="9" text="C" style_text_color="0xb7b7b7"/></lv_button>
+            <lv_button x="7" y="133" width="42" height="37"><style name="nav_idle"/><lv_label x="14" y="9" text="M" style_text_color="0xb7b7b7"/></lv_button>
+            <lv_button x="7" y="175" width="42" height="37"><style name="nav_idle"/><lv_label x="14" y="9" text="T" style_text_color="0xb7b7b7"/></lv_button>
+            <lv_button x="7" y="217" width="42" height="37"><style name="nav_idle"/><lv_label x="14" y="9" text="S" style_text_color="0xb7b7b7"/></lv_button>
+        </lv_obj>
+
+        <lv_obj x="66" y="9" width="404" height="32" style_bg_color="0x080808" style_border_width="0">
+            <lv_label x="0" y="4" text="Zero G" style_text_color="0xf7f7f7"/>
+
+            <lv_obj x="74" y="5" width="42" height="22">
+                <style name="pill_idle"/>
+                <lv_label x="11" y="4" text="Idle" style_text_color="0xd5d5d5"/>
+            </lv_obj>
+
+            <lv_label x="266" y="8" text="11:52" style_text_color="0xdddddd"/>
+            <lv_label x="309" y="8" text="N 24/Off" style_text_color="0xf7f7f7"/>
+            <lv_label x="369" y="8" text="B 24/Off" style_text_color="0xf7f7f7"/>
+        </lv_obj>
+
+        <lv_obj x="66" y="49" width="404" height="214" style_bg_color="0x090909" style_border_width="0" style_radius="20">
+            <lv_obj x="-20" y="-16" width="150" height="150" style_bg_color="0xff524d" style_radius="999" style_border_width="0"/>
+            <lv_obj x="166" y="-10" width="130" height="130" style_bg_color="0xe53935" style_radius="999" style_border_width="0"/>
+            <lv_obj x="250" y="112" width="138" height="138" style_bg_color="0x7a1616" style_radius="999" style_border_width="0"/>
+
+            <lv_label x="18" y="18" text="Ready" style_text_color="0xf7f7f7"/>
+
+            <lv_button x="218" y="160" width="36" height="36">
+                <style name="button_soft"/>
+                <lv_label x="13" y="9" text="F" style_text_color="0xffffff"/>
+            </lv_button>
+            <lv_button x="262" y="160" width="36" height="36">
+                <style name="button_soft"/>
+                <lv_label x="13" y="9" text="C" style_text_color="0xffffff"/>
+            </lv_button>
+            <lv_button x="306" y="160" width="36" height="36">
+                <style name="button_soft"/>
+                <lv_label x="13" y="9" text="T" style_text_color="0xffffff"/>
+            </lv_button>
+            <lv_button x="350" y="160" width="36" height="36">
+                <style name="button_red"/>
+                <lv_label x="13" y="9" text="P" style_text_color="0xffffff"/>
+            </lv_button>
+        </lv_obj>
+    </view>
+</screen>

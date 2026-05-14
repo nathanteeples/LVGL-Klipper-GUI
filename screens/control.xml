@@ -1,0 +1,63 @@
+<screen>
+    <view>
+        <style name="screen_bg"/>
+
+        <lv_obj x="0" y="0" width="56" height="272">
+            <style name="sidebar_bg"/>
+            <lv_button x="7" y="7" width="42" height="37"><style name="nav_idle"/><lv_label x="14" y="9" text="H" style_text_color="0xb7b7b7"/></lv_button>
+            <lv_button x="7" y="49" width="42" height="37"><style name="nav_idle"/><lv_label x="14" y="9" text="F" style_text_color="0xb7b7b7"/></lv_button>
+            <lv_button x="10" y="91" width="42" height="37"><style name="nav_active"/><lv_label x="14" y="9" text="C" style_text_color="0xffffff"/></lv_button>
+            <lv_button x="7" y="133" width="42" height="37"><style name="nav_idle"/><lv_label x="14" y="9" text="M" style_text_color="0xb7b7b7"/></lv_button>
+            <lv_button x="7" y="175" width="42" height="37"><style name="nav_idle"/><lv_label x="14" y="9" text="T" style_text_color="0xb7b7b7"/></lv_button>
+            <lv_button x="7" y="217" width="42" height="37"><style name="nav_idle"/><lv_label x="14" y="9" text="S" style_text_color="0xb7b7b7"/></lv_button>
+        </lv_obj>
+
+        <lv_obj x="66" y="9" width="404" height="32" style_bg_color="0x080808" style_border_width="0">
+            <lv_label x="0" y="4" text="Control" style_text_color="0xf7f7f7"/>
+            <lv_obj x="57" y="5" width="86" height="22"><style name="pill_printing"/><lv_label x="8" y="4" text="Printing 55%" style_text_color="0x26d07c"/></lv_obj>
+            <lv_label x="266" y="8" text="11:52" style_text_color="0xdddddd"/>
+            <lv_label x="309" y="8" text="N 200/210" style_text_color="0xf7f7f7"/>
+            <lv_label x="369" y="8" text="B 60/60" style_text_color="0xf7f7f7"/>
+        </lv_obj>
+
+        <lv_obj x="66" y="49" width="197" height="214">
+            <style name="card"/>
+
+            <lv_label x="9" y="20" text="Nozzle" style_text_color="0xa8a8a8"/>
+            <lv_button x="74" y="9" width="44" height="34"><style name="button_dark"/><lv_label x="11" y="9" text="Off" style_text_color="0xf7f7f7"/></lv_button>
+            <lv_button x="125" y="9" width="58" height="34"><style name="button_red"/><lv_label x="12" y="9" text="210°" style_text_color="0xffffff"/></lv_button>
+
+            <lv_label x="9" y="68" text="Bed" style_text_color="0xa8a8a8"/>
+            <lv_button x="74" y="57" width="44" height="34"><style name="button_dark"/><lv_label x="11" y="9" text="Off" style_text_color="0xf7f7f7"/></lv_button>
+            <lv_button x="125" y="57" width="58" height="34"><style name="button_red"/><lv_label x="16" y="9" text="60°" style_text_color="0xffffff"/></lv_button>
+
+            <lv_label x="9" y="109" text="Extrusion" style_text_color="0xa8a8a8"/>
+            <lv_button x="9" y="124" width="60" height="30"><style name="button_dark"/><lv_label x="18" y="6" text="-" style_text_color="0xf7f7f7"/></lv_button>
+            <lv_label x="82" y="132" text="5 mm" style_text_color="0xa8a8a8"/>
+            <lv_button x="125" y="124" width="60" height="30"><style name="button_red"/><lv_label x="18" y="6" text="+" style_text_color="0xffffff"/></lv_button>
+
+            <lv_button x="9" y="167" width="30" height="36"><style name="button_dark"/><lv_label x="10" y="9" text="1" style_text_color="0xa8a8a8"/></lv_button>
+            <lv_button x="42" y="167" width="30" height="36"><style name="button_red"/><lv_label x="10" y="9" text="5" style_text_color="0xffffff"/></lv_button>
+            <lv_button x="75" y="167" width="30" height="36"><style name="button_dark"/><lv_label x="6" y="9" text="10" style_text_color="0xa8a8a8"/></lv_button>
+            <lv_button x="108" y="167" width="30" height="36"><style name="button_dark"/><lv_label x="6" y="9" text="25" style_text_color="0xa8a8a8"/></lv_button>
+            <lv_button x="144" y="167" width="44" height="36"><style name="button_dark"/><lv_label x="11" y="9" text="M" style_text_color="0xf7f7f7"/></lv_button>
+        </lv_obj>
+
+        <lv_obj x="273" y="49" width="197" height="214">
+            <style name="card"/>
+
+            <lv_button x="9" y="9" width="41" height="30"><style name="button_red"/><lv_label x="6" y="7" text="0.1" style_text_color="0xffffff"/></lv_button>
+            <lv_button x="55" y="9" width="41" height="30"><style name="button_dark"/><lv_label x="14" y="7" text="1" style_text_color="0xa8a8a8"/></lv_button>
+            <lv_button x="101" y="9" width="41" height="30"><style name="button_dark"/><lv_label x="10" y="7" text="10" style_text_color="0xa8a8a8"/></lv_button>
+            <lv_button x="147" y="9" width="41" height="30"><style name="button_dark"/><lv_label x="6" y="7" text="100" style_text_color="0xa8a8a8"/></lv_button>
+
+            <lv_button x="75" y="58" width="48" height="38"><style name="button_dark"/><lv_label x="17" y="9" text="^" style_text_color="0xf7f7f7"/></lv_button>
+            <lv_button x="21" y="102" width="48" height="38"><style name="button_dark"/><lv_label x="17" y="9" text="&lt;" style_text_color="0xf7f7f7"/></lv_button>
+            <lv_button x="75" y="102" width="48" height="38"><style name="button_red"/><lv_label x="14" y="9" text="H" style_text_color="0xffffff"/></lv_button>
+            <lv_button x="129" y="102" width="48" height="38"><style name="button_dark"/><lv_label x="17" y="9" text="&gt;" style_text_color="0xf7f7f7"/></lv_button>
+            <lv_button x="21" y="146" width="48" height="38"><style name="button_dark"/><lv_label x="13" y="9" text="Z-" style_text_color="0xf7f7f7"/></lv_button>
+            <lv_button x="75" y="146" width="48" height="38"><style name="button_dark"/><lv_label x="17" y="9" text="v" style_text_color="0xf7f7f7"/></lv_button>
+            <lv_button x="129" y="146" width="48" height="38"><style name="button_dark"/><lv_label x="13" y="9" text="Z+" style_text_color="0xf7f7f7"/></lv_button>
+        </lv_obj>
+    </view>
+</screen>

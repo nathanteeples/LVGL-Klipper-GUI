@@ -6,6 +6,9 @@ It also now includes an LVGL XML preview project for the online editor/viewer un
 
 - `ui/project.xml`
 - `ui/globals.xml`
+- `ui/components/README.md`
+- `ui/fonts/README.md`
+- `ui/images/README.md`
 - `ui/screens/home.xml`
 - `ui/screens/home_idle.xml`
 - `ui/screens/files.xml`
@@ -13,6 +16,20 @@ It also now includes an LVGL XML preview project for the online editor/viewer un
 - `ui/screens/mesh.xml`
 - `ui/screens/tuning.xml`
 - `ui/screens/settings.xml`
+- `ui/screens/README.md`
+- `ui/widgets/README.md`
+
+For compatibility with LVGL Online Share's current repository detection logic,
+the same preview project is also mirrored at the repo root:
+
+- `project.xml`
+- `globals.xml`
+- `components/README.md`
+- `fonts/README.md`
+- `images/README.md`
+- `screens/*.xml`
+- `screens/README.md`
+- `widgets/README.md`
 
 Files
 
@@ -24,8 +41,11 @@ Files
 LVGL online editor usage
 
 - Open [viewer.lvgl.io](https://viewer.lvgl.io)
+- Paste the public repo URL: `https://github.com/nathanteeples/LVGL-Klipper-GUI`
 - Paste the public folder URL: `https://github.com/nathanteeples/LVGL-Klipper-GUI/tree/main/ui`
-- LVGL Online Share expects the target folder to contain both `project.xml` and `globals.xml`, so the editor-facing XML project now lives entirely inside `ui/`.
+- Both URLs should now work.
+- LVGL Online Share expects the target folder to contain both `project.xml` and `globals.xml`.
+- The viewer currently also checks for at least one non-XML file in standard project folders such as `screens/`, `components/`, `widgets/`, `fonts/`, or `images/`, so this repo includes placeholder `README.md` files there for compatibility.
 - Use the `ui/screens/` folder to switch between the static preview screens in the editor.
 - These XML files are editor-friendly previews of the native runtime UI, not a one-to-one export of all runtime behavior from `src/zerog_ui.cpp`.
 
