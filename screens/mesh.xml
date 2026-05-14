@@ -1,0 +1,72 @@
+<screen>
+    <view>
+        <style name="screen_bg"/>
+
+        <lv_obj x="0" y="0" width="56" height="272">
+            <style name="sidebar_bg"/>
+            <lv_button x="7" y="7" width="42" height="37"><style name="nav_idle"/><lv_label x="14" y="9" text="H" style_text_color="0xb7b7b7"/></lv_button>
+            <lv_button x="7" y="49" width="42" height="37"><style name="nav_idle"/><lv_label x="14" y="9" text="F" style_text_color="0xb7b7b7"/></lv_button>
+            <lv_button x="7" y="91" width="42" height="37"><style name="nav_idle"/><lv_label x="14" y="9" text="C" style_text_color="0xb7b7b7"/></lv_button>
+            <lv_button x="10" y="133" width="42" height="37"><style name="nav_active"/><lv_label x="14" y="9" text="M" style_text_color="0xffffff"/></lv_button>
+            <lv_button x="7" y="175" width="42" height="37"><style name="nav_idle"/><lv_label x="14" y="9" text="T" style_text_color="0xb7b7b7"/></lv_button>
+            <lv_button x="7" y="217" width="42" height="37"><style name="nav_idle"/><lv_label x="14" y="9" text="S" style_text_color="0xb7b7b7"/></lv_button>
+        </lv_obj>
+
+        <lv_obj x="66" y="9" width="404" height="32" style_bg_color="0x080808" style_border_width="0">
+            <lv_label x="0" y="4" text="Bed Mesh" style_text_color="0xf7f7f7"/>
+            <lv_obj x="72" y="5" width="86" height="22"><style name="pill_printing"/><lv_label x="8" y="4" text="Printing 55%" style_text_color="0x26d07c"/></lv_obj>
+            <lv_label x="266" y="8" text="11:52" style_text_color="0xdddddd"/>
+            <lv_label x="309" y="8" text="N 200/210" style_text_color="0xf7f7f7"/>
+            <lv_label x="369" y="8" text="B 60/60" style_text_color="0xf7f7f7"/>
+        </lv_obj>
+
+        <lv_obj x="66" y="49" width="192" height="214">
+            <style name="card"/>
+            <lv_label x="12" y="12" text="Deviation" style_text_color="0xa8a8a8"/>
+            <lv_label x="12" y="34" text="0.18 mm" style_text_color="0xf7f7f7"/>
+
+            <lv_obj x="12" y="60" width="168" height="142">
+                <style name="card_dark"/>
+                <lv_obj x="26" y="16" width="16" height="16"><style name="dot_cold"/></lv_obj>
+                <lv_obj x="51" y="16" width="16" height="16"><style name="dot_cold"/></lv_obj>
+                <lv_obj x="76" y="16" width="16" height="16"><style name="dot_cold"/></lv_obj>
+                <lv_obj x="101" y="16" width="16" height="16"><style name="dot_mid"/></lv_obj>
+                <lv_obj x="126" y="16" width="16" height="16"><style name="dot_hot"/></lv_obj>
+
+                <lv_obj x="26" y="41" width="16" height="16"><style name="dot_cold"/></lv_obj>
+                <lv_obj x="51" y="41" width="16" height="16"><style name="dot_cold"/></lv_obj>
+                <lv_obj x="76" y="41" width="16" height="16"><style name="dot_mid"/></lv_obj>
+                <lv_obj x="101" y="41" width="16" height="16"><style name="dot_hot"/></lv_obj>
+                <lv_obj x="126" y="41" width="16" height="16"><style name="dot_cold"/></lv_obj>
+
+                <lv_obj x="26" y="66" width="16" height="16"><style name="dot_cold"/></lv_obj>
+                <lv_obj x="51" y="66" width="16" height="16"><style name="dot_cold"/></lv_obj>
+                <lv_obj x="76" y="66" width="16" height="16"><style name="dot_hot"/></lv_obj>
+                <lv_obj x="101" y="66" width="16" height="16"><style name="dot_mid"/></lv_obj>
+                <lv_obj x="126" y="66" width="16" height="16"><style name="dot_cold"/></lv_obj>
+
+                <lv_obj x="26" y="91" width="16" height="16"><style name="dot_cold"/></lv_obj>
+                <lv_obj x="51" y="91" width="16" height="16"><style name="dot_mid"/></lv_obj>
+                <lv_obj x="76" y="91" width="16" height="16"><style name="dot_cold"/></lv_obj>
+                <lv_obj x="101" y="91" width="16" height="16"><style name="dot_cold"/></lv_obj>
+                <lv_obj x="126" y="91" width="16" height="16"><style name="dot_hot"/></lv_obj>
+
+                <lv_obj x="26" y="116" width="16" height="16"><style name="dot_cold"/></lv_obj>
+                <lv_obj x="51" y="116" width="16" height="16"><style name="dot_mid"/></lv_obj>
+                <lv_obj x="76" y="116" width="16" height="16"><style name="dot_cold"/></lv_obj>
+                <lv_obj x="101" y="116" width="16" height="16"><style name="dot_hot"/></lv_obj>
+                <lv_obj x="126" y="116" width="16" height="16"><style name="dot_cold"/></lv_obj>
+            </lv_obj>
+        </lv_obj>
+
+        <lv_obj x="268" y="49" width="202" height="214">
+            <style name="card"/>
+            <lv_label x="12" y="12" text="Bed temperature" style_text_color="0xa8a8a8"/>
+            <lv_label x="12" y="42" text="60C" style_text_color="0xf7f7f7"/>
+            <lv_label x="12" y="96" text="Profile: textured_pc" style_text_color="0xa8a8a8"/>
+
+            <lv_button x="12" y="160" width="84" height="42"><style name="button_red"/><lv_label x="12" y="12" text="Calibrate" style_text_color="0xffffff"/></lv_button>
+            <lv_button x="106" y="160" width="84" height="42"><style name="button_dark"/><lv_label x="24" y="12" text="Load" style_text_color="0xf7f7f7"/></lv_button>
+        </lv_obj>
+    </view>
+</screen>

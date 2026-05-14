@@ -1,0 +1,11 @@
+<project>
+    <targets>
+        <target name="guition_jc3248w535c">
+            <display width="480" height="272" color_format="RGB565"/>
+            <memory name="int_ram" size="512K"/>
+            <memory name="ext_ram" size="8M"/>
+            <memory name="int_flash" size="16M"/>
+            <memory name="ext_flash" size="16M"/>
+        </target>
+    </targets>
+</project>

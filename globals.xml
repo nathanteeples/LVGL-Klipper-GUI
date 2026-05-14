@@ -1,0 +1,23 @@
+<globals>
+    <styles>
+        <style name="screen_bg" bg_color="0x080808" border_width="0"/>
+        <style name="sidebar_bg" bg_color="0x0b0b0b" border_width="0" radius="0"/>
+        <style name="card" bg_color="0x151515" border_width="0" radius="18"/>
+        <style name="card_dark" bg_color="0x101010" border_width="0" radius="15"/>
+        <style name="nav_active" bg_color="0xe53935" border_width="0" radius="14"/>
+        <style name="nav_idle" bg_color="0x0b0b0b" border_width="0" radius="14"/>
+        <style name="button_red" bg_color="0xe53935" border_width="0" radius="14"/>
+        <style name="button_dark" bg_color="0x242424" border_width="0" radius="14"/>
+        <style name="button_soft" bg_color="0x202020" border_width="0" radius="14"/>
+        <style name="field_dark" bg_color="0x242424" border_width="0" radius="11"/>
+        <style name="pill_printing" bg_color="0x18261d" border_width="0" radius="999"/>
+        <style name="pill_idle" bg_color="0x242424" border_width="0" radius="999"/>
+        <style name="tile_danger" bg_color="0xe53935" border_width="0" radius="17"/>
+        <style name="ring" bg_color="0x151515" border_width="8" border_color="0xe53935" radius="999"/>
+        <style name="dot_hot" bg_color="0xe53935" border_width="0" radius="999"/>
+        <style name="dot_mid" bg_color="0xffc14d" border_width="0" radius="999"/>
+        <style name="dot_cold" bg_color="0x555555" border_width="0" radius="999"/>
+        <style name="muted_text" text_color="0xa8a8a8"/>
+        <style name="white_text" text_color="0xf7f7f7"/>
+    </styles>
+</globals>

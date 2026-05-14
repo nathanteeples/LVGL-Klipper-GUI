@@ -2,12 +2,32 @@
 
 This workspace now includes a native LVGL implementation of the HTML prototype under `src/` and `include/`.
 
+It also now includes an LVGL XML preview project for the online editor/viewer:
+
+- `project.xml`
+- `globals.xml`
+- `screens/home.xml`
+- `screens/home_idle.xml`
+- `screens/files.xml`
+- `screens/control.xml`
+- `screens/mesh.xml`
+- `screens/tuning.xml`
+- `screens/settings.xml`
+
 Files
 
 - `src/main.cpp`
 - `src/zerog_ui.cpp`
 - `include/zerog_ui.h`
 - `include/zerog_ui_assets.h`
+
+LVGL online editor usage
+
+- Open [viewer.lvgl.io](https://viewer.lvgl.io)
+- Paste the public repo URL: `https://github.com/nathanteeples/LVGL-Klipper-GUI`
+- LVGL Online Share expects the target folder to contain both `project.xml` and `globals.xml`, which are now at the repo root.
+- Use the `screens/` folder to switch between the static preview screens in the editor.
+- These XML files are editor-friendly previews of the native runtime UI, not a one-to-one export of all runtime behavior from `src/zerog_ui.cpp`.
 
 What is already implemented
 

@@ -1,0 +1,68 @@
+<screen>
+    <view>
+        <style name="screen_bg"/>
+
+        <lv_obj x="0" y="0" width="56" height="272">
+            <style name="sidebar_bg"/>
+            <lv_button x="7" y="7" width="42" height="37"><style name="nav_idle"/><lv_label x="14" y="9" text="H" style_text_color="0xb7b7b7"/></lv_button>
+            <lv_button x="7" y="49" width="42" height="37"><style name="nav_idle"/><lv_label x="14" y="9" text="F" style_text_color="0xb7b7b7"/></lv_button>
+            <lv_button x="7" y="91" width="42" height="37"><style name="nav_idle"/><lv_label x="14" y="9" text="C" style_text_color="0xb7b7b7"/></lv_button>
+            <lv_button x="7" y="133" width="42" height="37"><style name="nav_idle"/><lv_label x="14" y="9" text="M" style_text_color="0xb7b7b7"/></lv_button>
+            <lv_button x="10" y="175" width="42" height="37"><style name="nav_active"/><lv_label x="14" y="9" text="T" style_text_color="0xffffff"/></lv_button>
+            <lv_button x="7" y="217" width="42" height="37"><style name="nav_idle"/><lv_label x="14" y="9" text="S" style_text_color="0xb7b7b7"/></lv_button>
+        </lv_obj>
+
+        <lv_obj x="66" y="9" width="404" height="32" style_bg_color="0x080808" style_border_width="0">
+            <lv_label x="0" y="4" text="Tuning" style_text_color="0xf7f7f7"/>
+            <lv_obj x="55" y="5" width="86" height="22"><style name="pill_printing"/><lv_label x="8" y="4" text="Printing 55%" style_text_color="0x26d07c"/></lv_obj>
+            <lv_label x="266" y="8" text="11:52" style_text_color="0xdddddd"/>
+            <lv_label x="309" y="8" text="N 200/210" style_text_color="0xf7f7f7"/>
+            <lv_label x="369" y="8" text="B 60/60" style_text_color="0xf7f7f7"/>
+        </lv_obj>
+
+        <lv_obj x="66" y="49" width="197" height="214">
+            <style name="card"/>
+
+            <lv_label x="9" y="9" text="Speed" style_text_color="0xa8a8a8"/>
+            <lv_label x="155" y="9" text="100%" style_text_color="0xf7f7f7"/>
+            <lv_slider x="9" y="22" width="179" height="24" min_value="30" max_value="180" value="100"/>
+
+            <lv_label x="9" y="58" text="Flow" style_text_color="0xa8a8a8"/>
+            <lv_label x="160" y="58" text="98%" style_text_color="0xf7f7f7"/>
+            <lv_slider x="9" y="71" width="179" height="24" min_value="80" max_value="120" value="98"/>
+
+            <lv_label x="9" y="107" text="Z Offset" style_text_color="0xa8a8a8"/>
+            <lv_label x="160" y="107" text="0.00" style_text_color="0xf7f7f7"/>
+            <lv_slider x="9" y="120" width="179" height="24" min_value="-40" max_value="40" value="0"/>
+
+            <lv_button x="9" y="156" width="179" height="40">
+                <style name="button_soft"/>
+                <lv_label x="12" y="12" text="Fans" style_text_color="0xf7f7f7"/>
+                <lv_label x="118" y="14" text="2 active" style_text_color="0xa8a8a8"/>
+            </lv_button>
+        </lv_obj>
+
+        <lv_obj x="273" y="49" width="197" height="214">
+            <style name="card"/>
+
+            <lv_label x="9" y="9" text="Pressure Adv." style_text_color="0xa8a8a8"/>
+            <lv_label x="150" y="9" text="0.045" style_text_color="0xf7f7f7"/>
+            <lv_slider x="9" y="22" width="179" height="24" min_value="0" max_value="120" value="45"/>
+
+            <lv_label x="9" y="58" text="Acceleration" style_text_color="0xa8a8a8"/>
+            <lv_label x="150" y="58" text="5000" style_text_color="0xf7f7f7"/>
+            <lv_slider x="9" y="71" width="179" height="24" min_value="500" max_value="12000" value="5000"/>
+
+            <lv_label x="9" y="107" text="Corner Vel." style_text_color="0xa8a8a8"/>
+            <lv_label x="165" y="107" text="5" style_text_color="0xf7f7f7"/>
+            <lv_slider x="9" y="120" width="179" height="24" min_value="1" max_value="20" value="5"/>
+
+            <lv_obj x="9" y="156" width="179" height="40">
+                <style name="card_dark"/>
+                <lv_label x="12" y="12" text="Hotend 70%" style_text_color="0xf7f7f7"/>
+                <lv_label x="92" y="12" text="Part 45%" style_text_color="0xf7f7f7"/>
+                <lv_label x="150" y="12" text="Filter 0%" style_text_color="0xa8a8a8"/>
+            </lv_obj>
+        </lv_obj>
+    </view>
+</screen>
